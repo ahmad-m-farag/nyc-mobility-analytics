@@ -48,7 +48,15 @@ No Python, DuckDB, Airflow, or Superset installation is required on the host.
    docker compose build
    ```
 
-3. Download a configurable inclusive month range from the official TLC file host:
+3. Start PostgreSQL, Airflow, and Superset without running the dashboard bootstrap yet:
+
+   ```bash
+   docker compose up -d postgres airflow superset-init superset
+   ```
+
+   Wait for Airflow and Superset to become healthy. The dashboard bootstrap must run only after data has been loaded and the dashboard aggregate tables have been created.
+
+4. Download a configurable inclusive month range from the official TLC file host:
 
    ```bash
    docker compose --profile tools run --rm downloader \
@@ -57,24 +65,47 @@ No Python, DuckDB, Airflow, or Superset installation is required on the host.
 
    The downloader is repeatable. Existing files are skipped unless `--force` is supplied. It validates the Parquet container signature before replacing a destination file.
 
-4. Initialize the empty warehouse:
+5. Initialize the empty warehouse:
 
    ```bash
    docker compose --profile tools run --rm warehouse-init
    ```
 
-5. Start Airflow, PostgreSQL, and Superset:
+6. Load the selected data through Airflow. For one month, trigger `nyc_monthly_etl` with that month in `YYYY-MM` format:
 
    ```bash
-   docker compose up -d postgres airflow superset-init superset superset-bootstrap
+   docker compose exec airflow airflow dags trigger nyc_monthly_etl \
+     --conf '{"month":"2025-01"}'
    ```
 
-6. Open the UIs:
+   Monitor the run until its state is `success`:
+
+   ```bash
+   docker compose exec airflow airflow dags list-runs nyc_monthly_etl
+   ```
+
+   For multiple months, use the historical backfill procedure below instead. Do not continue until every requested monthly run has succeeded.
+
+7. Create the dashboard aggregate tables from the loaded warehouse:
+
+   ```bash
+   docker compose --profile tools run --rm warehouse-optimize
+   ```
+
+8. Bootstrap the Superset database connection, dataset, filters, charts, and dashboard:
+
+   ```bash
+   docker compose up --force-recreate --no-deps superset-bootstrap
+   ```
+
+   A successful run prints the dashboard URL and exits with code 0.
+
+9. Open the UIs:
 
    - Airflow: [http://localhost:8080](http://localhost:8080)
-   - Superset: [http://localhost:8088](http://localhost:8088)
+   - Superset dashboard: [http://localhost:8088/superset/dashboard/nyc-hvfhv-mobility-analytics/](http://localhost:8088/superset/dashboard/nyc-hvfhv-mobility-analytics/)
 
-   The Superset one-shot bootstrap creates the read-only DuckDB connection, dataset, three native filters, eight charts, and the `NYC HVFHV Mobility Analytics` dashboard from repository code.
+   The Superset one-shot bootstrap creates the read-only DuckDB connection, dataset, three native filters, eight charts, and the `NYC HVFHV Mobility Analytics` dashboard from repository code. It depends on `agg_dashboard_trip_metrics` and `agg_route_metrics`, so it must run after `warehouse-optimize`.
 
 ## Load data
 
@@ -85,6 +116,23 @@ No Python, DuckDB, Airflow, or Superset installation is required on the host.
 ```
 
 The script runs DuckDB in Docker. The monthly SQL transaction groups exact duplicates, classifies every applicable rejection reason, replaces the selected month safely, validates dimension matches, and checks raw = accepted + quarantined before commit.
+
+### One month through Airflow
+
+After downloading the selected month and initializing the warehouse, trigger the monthly DAG from the project directory. Replace `2025-01` with any month from `2025-01` through `2026-08`:
+
+```bash
+docker compose exec airflow airflow dags trigger nyc_monthly_etl \
+  --conf '{"month":"2025-01"}'
+```
+
+Check the DAG-run state with:
+
+```bash
+docker compose exec airflow airflow dags list-runs nyc_monthly_etl
+```
+
+The run executes `initialize_warehouse`, `load_month`, and `validate_month`. Proceed to the aggregate refresh only after all three tasks and the DAG run report `success`.
 
 ### Airflow backfill
 
@@ -101,7 +149,7 @@ The controller validates the range and triggers `nyc_monthly_etl` sequentially f
 
 ## Refresh dashboard aggregates
 
-After a new ETL load:
+After a new ETL load, recreate the aggregate tables before running the one-shot Superset bootstrap:
 
 ```bash
 docker compose --profile tools run --rm warehouse-optimize

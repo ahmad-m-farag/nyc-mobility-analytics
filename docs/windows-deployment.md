@@ -11,14 +11,41 @@
 
 ## Commands from Ubuntu/WSL
 
+Build the images, then start the required services without running `superset-bootstrap`:
+
 ```bash
 docker compose build
-docker compose --profile tools run --rm downloader --start 2025-01 --end 2026-08
-docker compose --profile tools run --rm warehouse-init
-docker compose up -d postgres airflow superset-init superset superset-bootstrap
+docker compose up -d postgres airflow superset-init superset
 ```
 
-Use the Airflow backfill DAG to load the required months. Refresh aggregates afterward.
+Download the required inclusive month range and initialize the warehouse:
+
+```bash
+docker compose --profile tools run --rm downloader --start 2025-01 --end 2026-08
+docker compose --profile tools run --rm warehouse-init
+```
+
+Load data through Airflow. To process one selected month, replace `2025-01` as needed and run:
+
+```bash
+docker compose exec airflow airflow dags trigger nyc_monthly_etl \
+  --conf '{"month":"2025-01"}'
+docker compose exec airflow airflow dags list-runs nyc_monthly_etl
+```
+
+Wait until the DAG run and its `initialize_warehouse`, `load_month`, and `validate_month` tasks report `success`. For multiple months, trigger `nyc_historical_backfill` in the Airflow UI with the required `start_month` and `end_month` values and wait for every monthly run to succeed.
+
+Create the dashboard aggregates, then run the one-shot dashboard bootstrap:
+
+```bash
+docker compose --profile tools run --rm warehouse-optimize
+docker compose up --force-recreate --no-deps superset-bootstrap
+```
+
+Do not run `superset-bootstrap` before `warehouse-optimize`; the bootstrap requires `agg_dashboard_trip_metrics` and `agg_route_metrics`. After the bootstrap exits successfully, open:
+
+- Airflow: [http://localhost:8080](http://localhost:8080)
+- Superset dashboard: [http://localhost:8088/superset/dashboard/nyc-hvfhv-mobility-analytics/](http://localhost:8088/superset/dashboard/nyc-hvfhv-mobility-analytics/)
 
 ## Resource behavior
 
