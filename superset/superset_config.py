@@ -1,0 +1,12 @@
+import os
+
+SECRET_KEY = os.environ["SUPERSET_SECRET_KEY"]
+SQLALCHEMY_DATABASE_URI = "sqlite:////app/superset_home/superset.db"
+WTF_CSRF_ENABLED = True
+TALISMAN_ENABLED = False
+FEATURE_FLAGS = {
+    "DASHBOARD_NATIVE_FILTERS": True,
+    "ENABLE_TEMPLATE_PROCESSING": False,
+}
+ROW_LIMIT = 50_000
+SQL_MAX_ROW = 50_000

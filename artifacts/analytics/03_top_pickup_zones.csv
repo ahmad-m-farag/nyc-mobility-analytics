@@ -1,0 +1,16 @@
+pickup_rank,borough,zone_name,total_pickups,pickup_share_pct,avg_trip_miles
+1,Queens,LaGuardia Airport,8155975,1.98,11.68
+2,Queens,JFK Airport,6796906,1.65,17.92
+3,Brooklyn,Crown Heights North,5374211,1.31,3.66
+4,Manhattan,Times Sq/Theatre District,4780734,1.16,6.46
+5,Manhattan,East Village,4779283,1.16,4.54
+6,Brooklyn,East New York,4735454,1.15,3.73
+7,Manhattan,Midtown Center,4690940,1.14,5.51
+8,Brooklyn,Bushwick South,4585673,1.11,4.0
+9,Manhattan,TriBeCa/Civic Center,4352448,1.06,5.13
+10,Manhattan,East Chelsea,4191605,1.02,5.52
+11,Manhattan,West Chelsea/Hudson Yards,4191506,1.02,4.73
+12,Manhattan,Union Sq,4145886,1.01,4.63
+13,Brooklyn,Williamsburg (North Side),4097975,1.0,4.4
+14,Brooklyn,Greenpoint,4088284,0.99,4.24
+15,Manhattan,Lower East Side,4003332,0.97,4.87

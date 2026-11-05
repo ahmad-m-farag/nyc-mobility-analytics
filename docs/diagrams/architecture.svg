@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="720" viewBox="0 0 1440 720" role="img" aria-labelledby="title desc">
+  <title id="title">NYC Mobility Analytics architecture</title>
+  <desc id="desc">Official TLC files flow through a Docker downloader and Airflow-orchestrated DuckDB ETL into a dimensional warehouse, aggregate tables, SQL results, and a read-only Superset dashboard.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f7f9fc}.title{font:700 32px Arial;fill:#12233f}.label{font:700 20px Arial;fill:#12233f}.body{font:16px Arial;fill:#344563}.small{font:14px Arial;fill:#53657d}.box{fill:#fff;stroke:#1b5e8c;stroke-width:3;rx:18}.accent{fill:#e8f4fb;stroke:#168aad;stroke-width:3;rx:18}.data{fill:#fff7e6;stroke:#d97706;stroke-width:3;rx:18}.dash{fill:#eef8ee;stroke:#2f855a;stroke-width:3;rx:18}.arrow{stroke:#53657d;stroke-width:4;fill:none;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#53657d"/></marker>
+  </defs>
+  <rect class="bg" width="1440" height="720"/>
+  <text class="title" x="70" y="70">NYC Mobility Analytics Platform</text>
+  <text class="body" x="70" y="105">Reproducible Docker workflow from official monthly files to interactive analysis</text>
+
+  <rect class="data" x="70" y="175" width="240" height="155"/>
+  <text class="label" x="95" y="215">Official NYC TLC</text>
+  <text class="body" x="95" y="250">20 HVFHV Parquet files</text>
+  <text class="body" x="95" y="280">Taxi-zone lookup</text>
+  <text class="small" x="95" y="310">10.042 GB selected data</text>
+
+  <rect class="box" x="375" y="175" width="240" height="155"/>
+  <text class="label" x="400" y="215">Docker ingestion</text>
+  <text class="body" x="400" y="250">Range downloader</text>
+  <text class="body" x="400" y="280">Parquet signature check</text>
+  <text class="small" x="400" y="310">Repeatable, skip existing</text>
+
+  <rect class="accent" x="680" y="150" width="260" height="205"/>
+  <text class="label" x="705" y="195">Apache Airflow</text>
+  <text class="body" x="705" y="230">Monthly scheduled DAG</text>
+  <text class="body" x="705" y="260">Historical backfill DAG</text>
+  <text class="body" x="705" y="290">Retries and validation</text>
+  <text class="small" x="705" y="325">PostgreSQL + LocalExecutor</text>
+
+  <rect class="data" x="1010" y="145" width="340" height="215"/>
+  <text class="label" x="1035" y="190">DuckDB warehouse</text>
+  <text class="body" x="1035" y="225">fact_trips + 3 dimensions</text>
+  <text class="body" x="1035" y="255">quarantined_trips</text>
+  <text class="body" x="1035" y="285">dashboard + route aggregates</text>
+  <text class="small" x="1035" y="320">8 GB memory / 2 threads</text>
+
+  <path class="arrow" d="M310 252 H365"/><path class="arrow" d="M615 252 H670"/><path class="arrow" d="M940 252 H1000"/>
+
+  <rect class="box" x="385" y="470" width="280" height="145"/>
+  <text class="label" x="410" y="510">SQL analytics</text>
+  <text class="body" x="410" y="545">10 tested business queries</text>
+  <text class="small" x="410" y="578">Versioned SQL + CSV results</text>
+
+  <rect class="dash" x="770" y="445" width="360" height="195"/>
+  <text class="label" x="795" y="490">Apache Superset</text>
+  <text class="body" x="795" y="525">Read-only warehouse connection</text>
+  <text class="body" x="795" y="555">3 native filters / 8 charts</text>
+  <text class="body" x="795" y="585">Repository-owned bootstrap</text>
+  <text class="small" x="795" y="615">Interactive dashboard</text>
+
+  <path class="arrow" d="M1125 360 C1125 415 650 410 595 460"/>
+  <path class="arrow" d="M1180 360 C1180 415 1040 420 1010 438"/>
+</svg>

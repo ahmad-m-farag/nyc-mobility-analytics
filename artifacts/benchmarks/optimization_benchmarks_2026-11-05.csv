@@ -1,0 +1,13 @@
+benchmark_date,duckdb_image,threads,memory_limit,optimization,variant,run,seconds,median_seconds,speedup_x,result_equivalent,result_summary
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,timestamp_range,baseline,1,8.677,8.535,58.5,true,"trips=20490900;total_base_fare=552408127.14"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,timestamp_range,optimized,1,0.146,0.146,58.5,true,"trips=20490900;total_base_fare=552408127.14"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,dashboard_aggregate,baseline,1,14.415,13.655,48.6,true,"groups=256;trips=411739486;total_base_fare=11168662827.9"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,dashboard_aggregate,optimized,1,0.281,0.281,48.6,true,"groups=256;trips=411739486;total_base_fare=11168662827.9"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,timestamp_range,baseline,2,8.419,8.535,58.5,true,"trips=20490900;total_base_fare=552408127.14"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,timestamp_range,optimized,2,0.140,0.146,58.5,true,"trips=20490900;total_base_fare=552408127.14"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,dashboard_aggregate,baseline,2,13.561,13.655,48.6,true,"groups=256;trips=411739486;total_base_fare=11168662827.9"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,dashboard_aggregate,optimized,2,0.259,0.281,48.6,true,"groups=256;trips=411739486;total_base_fare=11168662827.9"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,timestamp_range,baseline,3,8.535,8.535,58.5,true,"trips=20490900;total_base_fare=552408127.14"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,timestamp_range,optimized,3,0.167,0.146,58.5,true,"trips=20490900;total_base_fare=552408127.14"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,dashboard_aggregate,baseline,3,13.655,13.655,48.6,true,"groups=256;trips=411739486;total_base_fare=11168662827.9"
+2026-11-05,duckdb/duckdb:1.5.6,2,8GB,dashboard_aggregate,optimized,3,0.296,0.281,48.6,true,"groups=256;trips=411739486;total_base_fare=11168662827.9"

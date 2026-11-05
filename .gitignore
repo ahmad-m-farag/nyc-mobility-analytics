@@ -1,0 +1,42 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Raw and reference datasets
+data/trip_record_data/
+data/taxi_zones/
+data/*.zip
+data/*.jpg
+data/*.pdf
+data/.DS_Store
+
+# DuckDB state and temporary spill files
+warehouse/*.duckdb
+warehouse/*.duckdb.*
+warehouse/duckdb_temp/
+warehouse/.DS_Store
+
+# Generated application state
+airflow_home/
+superset_home/
+postgres_data/
+logs/
+*.log
+
+# Temporary build outputs
+tmp/
+.presentation-build/
+.codex-finalizer/
+node_modules/
+node_modules
+.chart-data-*/
+
+# Python/editor/OS caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+.idea/
+.vscode/

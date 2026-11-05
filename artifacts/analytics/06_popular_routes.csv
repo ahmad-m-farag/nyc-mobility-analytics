@@ -1,0 +1,16 @@
+route_rank,pickup_borough,pickup_zone,dropoff_borough,dropoff_zone,total_trips,avg_trip_miles,avg_base_fare
+1,Brooklyn,Bushwick North,Brooklyn,Bushwick South,422916,1.25,10.81
+2,Brooklyn,Williamsburg (North Side),Brooklyn,Greenpoint,417719,1.27,12.17
+3,Brooklyn,Bushwick South,Brooklyn,Bushwick North,413500,1.24,10.88
+4,Brooklyn,Greenpoint,Brooklyn,Williamsburg (North Side),395762,1.28,12.43
+5,Queens,South Ozone Park,Queens,JFK Airport,386399,2.74,14.83
+6,Queens,South Jamaica,Queens,Jamaica,372562,1.32,10.5
+7,Queens,LaGuardia Airport,Manhattan,Times Sq/Theatre District,367675,9.66,70.31
+8,Manhattan,Times Sq/Theatre District,Queens,LaGuardia Airport,355828,10.41,67.76
+9,Queens,Astoria,Queens,Steinway,341798,1.53,11.75
+10,Queens,Steinway,Queens,Astoria,311430,1.51,11.91
+11,Brooklyn,Stuyvesant Heights,Brooklyn,Crown Heights North,309066,1.54,12.23
+12,Brooklyn,Williamsburg (North Side),Brooklyn,Williamsburg (South Side),306632,0.97,11.27
+13,Brooklyn,Prospect-Lefferts Gardens,Brooklyn,Crown Heights North,301472,1.71,12.87
+14,Manhattan,Central Harlem,Manhattan,Central Harlem North,299752,1.28,10.55
+15,Brooklyn,Crown Heights North,Brooklyn,Stuyvesant Heights,299322,1.6,12.2

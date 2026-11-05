@@ -1,0 +1,4 @@
+airport,total_pickups,avg_distance_miles,avg_duration_minutes,avg_base_fare,total_base_fare
+LaGuardia,8155975,11.68,34.79,60.69,494960005.54
+JFK,6796906,17.92,45.62,75.92,515998670.0
+Newark,24,7.09,24.68,45.15,1083.49

@@ -1,0 +1,4 @@
+ride_category,total_trips,trip_share_pct,avg_distance_miles,avg_duration_minutes,avg_base_fare
+Sharing not requested,401927481,97.62,4.93,19.62,27.3
+Shared requested and matched,5635158,1.37,7.3,30.33,21.86
+Shared requested but not matched,4176847,1.01,4.53,17.34,17.22

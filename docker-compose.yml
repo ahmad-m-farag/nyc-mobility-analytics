@@ -1,0 +1,157 @@
+x-airflow-environment: &airflow-environment
+  AIRFLOW_HOME: /opt/airflow
+  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+  AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
+  AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS: "${AIRFLOW_ADMIN_USERNAME:-admin}:admin"
+  AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "True"
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: >-
+    postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres:5432/${POSTGRES_DB:-airflow}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-airflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-airflow}
+      POSTGRES_DB: ${POSTGRES_DB:-airflow}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  airflow:
+    build:
+      context: ./airflow
+    container_name: nyc-airflow
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment: *airflow-environment
+    volumes:
+      - airflow_home:/opt/airflow
+      - ./airflow/dags:/opt/airflow/dags:ro
+      - ./etl:/opt/project/etl:ro
+      - ./sql:/opt/project/sql:ro
+      - ./data:/data:ro
+      - ./warehouse:/warehouse
+    command: standalone
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/api/v2/monitor/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 15
+      start_period: 60s
+    restart: unless-stopped
+
+  superset-init:
+    build:
+      context: ./superset
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+      SUPERSET_ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME:-admin}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-admin}
+      SUPERSET_HOME: /app/superset_home
+    volumes:
+      - superset_home:/app/superset_home
+    command:
+      - /bin/sh
+      - -c
+      - |
+        superset db upgrade
+        superset fab create-admin \
+          --username "$${SUPERSET_ADMIN_USERNAME}" \
+          --password "$${SUPERSET_ADMIN_PASSWORD}" \
+          --firstname NYC --lastname Admin \
+          --email admin@example.local || true
+        superset fab reset-password \
+          --username "$${SUPERSET_ADMIN_USERNAME}" \
+          --password "$${SUPERSET_ADMIN_PASSWORD}"
+        superset init
+    restart: "no"
+
+  superset:
+    build:
+      context: ./superset
+    container_name: nyc-superset
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:8088:8088"
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+      SUPERSET_HOME: /app/superset_home
+    volumes:
+      - superset_home:/app/superset_home
+      - ./warehouse:/warehouse:ro
+    command: superset run -h 0.0.0.0 -p 8088 --with-threads
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8088/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
+
+  superset-bootstrap:
+    build:
+      context: ./superset
+    depends_on:
+      superset:
+        condition: service_healthy
+    environment:
+      SUPERSET_URL: http://superset:8088
+      SUPERSET_ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME:-admin}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./superset/bootstrap_dashboard.py:/app/bootstrap_dashboard.py:ro
+    command: python /app/bootstrap_dashboard.py
+    restart: "no"
+
+  downloader:
+    build:
+      context: ./airflow
+    profiles: ["tools"]
+    volumes:
+      - ./data:/data
+      - ./scripts:/opt/project/scripts:ro
+    entrypoint: ["python", "/opt/project/scripts/download_tlc_data.py"]
+
+  warehouse-init:
+    image: duckdb/duckdb:1.5.6
+    profiles: ["tools"]
+    volumes:
+      - ./data:/data:ro
+      - ./etl:/opt/project/etl:ro
+      - ./warehouse:/warehouse
+    entrypoint: ["duckdb"]
+    command:
+      - -bail
+      - /warehouse/nyc_mobility.duckdb
+      - -c
+      - .read /opt/project/etl/init_warehouse.sql
+
+  warehouse-optimize:
+    image: duckdb/duckdb:1.5.6
+    profiles: ["tools"]
+    volumes:
+      - ./sql:/opt/project/sql:ro
+      - ./warehouse:/warehouse
+    entrypoint: ["duckdb"]
+    command:
+      - -bail
+      - /warehouse/nyc_mobility.duckdb
+      - -c
+      - .read /opt/project/sql/optimizations/create_dashboard_aggregate.sql
+
+volumes:
+  postgres_data:
+  superset_home:
+  airflow_home:

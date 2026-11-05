@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="850" viewBox="0 0 1440 850" role="img" aria-labelledby="title desc">
+  <title id="title">NYC Mobility dimensional model</title>
+  <desc id="desc">Fact trips joins to zone twice, provider twice, and ride features once. Quarantine and dashboard aggregates support quality and analytics.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f7f9fc}.title{font:700 32px Arial;fill:#12233f}.head{font:700 20px Arial;fill:#fff}.body{font:16px Arial;fill:#27364d}.small{font:14px Arial;fill:#53657d}.dim{fill:#fff;stroke:#168aad;stroke-width:3;rx:16}.fact{fill:#fff;stroke:#d97706;stroke-width:4;rx:16}.support{fill:#fff;stroke:#2f855a;stroke-width:3;rx:16}.dimhead{fill:#168aad}.facthead{fill:#d97706}.supporthead{fill:#2f855a}.link{stroke:#53657d;stroke-width:3;fill:none}.many{font:700 18px Arial;fill:#53657d}
+    </style>
+  </defs>
+  <rect class="bg" width="1440" height="850"/>
+  <text class="title" x="60" y="60">Dimensional model and analytical support tables</text>
+
+  <rect class="dim" x="70" y="120" width="330" height="190"/><path class="dimhead" d="M86 120 H384 Q400 120 400 136 V165 H70 V136 Q70 120 86 120"/>
+  <text class="head" x="95" y="150">dim_zone</text><text class="body" x="95" y="195">PK zone_id</text><text class="body" x="95" y="225">borough, zone_name</text><text class="body" x="95" y="255">service_zone</text><text class="small" x="95" y="285">Role-played for pickup and drop-off</text>
+
+  <rect class="dim" x="70" y="390" width="330" height="190"/><path class="dimhead" d="M86 390 H384 Q400 390 400 406 V435 H70 V406 Q70 390 86 390"/>
+  <text class="head" x="95" y="420">dim_provider</text><text class="body" x="95" y="465">PK provider_base_key</text><text class="body" x="95" y="495">hvfhs_license_num, base_num</text><text class="body" x="95" y="525">provider_name</text><text class="small" x="95" y="555">Dispatching and originating roles</text>
+
+  <rect class="dim" x="1040" y="120" width="330" height="230"/><path class="dimhead" d="M1056 120 H1354 Q1370 120 1370 136 V165 H1040 V136 Q1040 120 1056 120"/>
+  <text class="head" x="1065" y="150">dim_ride_features</text><text class="body" x="1065" y="195">PK ride_features_key</text><text class="body" x="1065" y="225">shared_requested / matched</text><text class="body" x="1065" y="255">access_a_ride</text><text class="body" x="1065" y="285">wav_requested / matched</text><text class="small" x="1065" y="320">Unique flag combinations</text>
+
+  <rect class="fact" x="505" y="155" width="430" height="455"/><path class="facthead" d="M521 155 H919 Q935 155 935 171 V205 H505 V171 Q505 155 521 155"/>
+  <text class="head" x="530" y="188">fact_trips</text>
+  <text class="body" x="530" y="240">PK trip_id</text><text class="body" x="530" y="275">FK pickup_zone_id / dropoff_zone_id</text><text class="body" x="530" y="310">FK dispatching / originating provider keys</text><text class="body" x="530" y="345">FK ride_features_key</text><text class="body" x="530" y="390">request, on-scene, pickup, drop-off time</text><text class="body" x="530" y="425">trip_miles, trip_time</text><text class="body" x="530" y="460">base fare, tolls, tax, surcharges</text><text class="body" x="530" y="495">airport fee, tips, driver pay, CBD fee</text><text class="small" x="530" y="555">Grain: one accepted trip occurrence</text>
+
+  <path class="link" d="M400 215 H505"/><text class="many" x="470" y="205">1:M</text>
+  <path class="link" d="M400 475 H505"/><text class="many" x="470" y="465">1:M</text>
+  <path class="link" d="M935 250 H1040"/><text class="many" x="970" y="240">M:1</text>
+
+  <rect class="support" x="70" y="665" width="360" height="125"/><path class="supporthead" d="M86 665 H414 Q430 665 430 681 V705 H70 V681 Q70 665 86 665"/>
+  <text class="head" x="95" y="694">quarantined_trips</text><text class="body" x="95" y="740">Source row + month + reason list</text><text class="small" x="95" y="770">Preserves every rejected occurrence</text>
+
+  <rect class="support" x="540" y="665" width="380" height="125"/><path class="supporthead" d="M556 665 H904 Q920 665 920 681 V705 H540 V681 Q540 665 556 665"/>
+  <text class="head" x="565" y="694">agg_dashboard_trip_metrics</text><text class="body" x="565" y="740">Date x hour x provider x zone x sharing</text><text class="small" x="565" y="770">11,039,719 rows</text>
+
+  <rect class="support" x="1030" y="665" width="340" height="125"/><path class="supporthead" d="M1046 665 H1354 Q1370 665 1370 681 V705 H1030 V681 Q1030 665 1046 665"/>
+  <text class="head" x="1055" y="694">agg_route_metrics</text><text class="body" x="1055" y="740">Pickup zone x drop-off zone</text><text class="small" x="1055" y="770">66,347 rows</text>
+
+  <path class="link" d="M720 610 V655"/><path class="link" d="M720 610 C720 640 1200 630 1200 655"/>
+</svg>
